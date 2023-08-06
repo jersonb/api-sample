@@ -7,7 +7,7 @@ namespace ExampleToday.Api.Controllers
     [Route("phrases")]
     public class PhrasesController : ControllerBase
     {
-        private readonly List<Phrase> Phrases = new()
+        private static readonly List<Phrase> Phrases = new()
         {
             new ()
             {
@@ -26,13 +26,18 @@ namespace ExampleToday.Api.Controllers
                 Author = "Ciclano",
                 Content = "Fizz"
             },
-
         };
 
         [HttpGet]
         public List<Phrase> Get()
         {
             return Phrases;
+        }
+
+        [HttpPost]
+        public void Post(Phrase phrase)
+        {
+            Phrases.Add(phrase);
         }
     }
 }
