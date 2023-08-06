@@ -7,7 +7,7 @@ namespace ExampleToday.Api.Controllers
     public class PhrasesController : ControllerBase
     {
         [HttpGet]
-        public string Get()
+        public string Get() 
         {
             return "Ok!";
         }
