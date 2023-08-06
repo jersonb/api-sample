@@ -22,7 +22,7 @@ namespace ExampleToday.Api.Controllers
                 Content = "Bar"
             },new ()
             {
-                Id = 2,
+                Id = 3,
                 Author = "Ciclano",
                 Content = "Fizz"
             },
