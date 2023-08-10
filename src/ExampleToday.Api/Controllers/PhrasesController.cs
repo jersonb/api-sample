@@ -45,5 +45,20 @@ namespace ExampleToday.Api.Controllers
         {
             Phrases.Add(phrase);
         }
+
+        [HttpPut("{id}")]
+        public void Put(int id, Phrase phrase)
+        {
+            phrase.Id = id;
+            var findedPhrase = Phrases.Find(p => p.Id == id);
+
+            if (findedPhrase != null)
+            {
+
+                findedPhrase.Author = phrase.Author;
+                findedPhrase.Content = phrase.Content;
+            }
+        }
+
     }
 }
