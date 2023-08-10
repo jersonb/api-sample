@@ -34,6 +34,12 @@ namespace ExampleToday.Api.Controllers
             return Phrases;
         }
 
+        [HttpGet("{id}")]
+        public Phrase? Get(int id)
+        {
+            return Phrases.Find(p => p.Id == id);
+        }
+
         [HttpPost]
         public void Post(Phrase phrase)
         {
