@@ -54,9 +54,18 @@ namespace ExampleToday.Api.Controllers
 
             if (findedPhrase != null)
             {
-
                 findedPhrase.Author = phrase.Author;
                 findedPhrase.Content = phrase.Content;
+            }
+        }
+
+        [HttpDelete]
+        public void Delete(int id, Phrase phrase)
+        {
+            if (phrase.Id == id)
+            {
+                var i = Phrases.FindIndex(p => p.Id == id);
+                Phrases.RemoveAt(i);
             }
         }
 
