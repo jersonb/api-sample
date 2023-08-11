@@ -15,12 +15,12 @@ namespace ExampleToday.Api.Controllers
         {
             var phrases = Phrases.AsEnumerable();
 
-            if (author != null)
+            if (!string.IsNullOrEmpty(author))
             {
                 phrases = phrases.Where(p => p.Author.ContainsInsensitive(author));
             }
 
-            if (term != null)
+            if (!string.IsNullOrEmpty(term))
             {
                 phrases = phrases.Where(p => p.Content.ContainsInsensitive(term));
             }
@@ -57,7 +57,11 @@ namespace ExampleToday.Api.Controllers
             }
 
             Phrases.Add(phrase);
-            return Created($"{Request.Host.ToUriComponent()}{Request.Path}/{phrase.Id}/", new { phrase.Author, phrase.Content });
+
+            var uri = Url.Action(nameof(GetById), "phrases", new { phrase.Id }, "https", Request.Host.ToUriComponent())
+                ?? throw new InvalidOperationException();
+
+            return Created(uri, new { phrase.Author, phrase.Content });
         }
 
         [HttpPut("{id}")]
@@ -75,7 +79,10 @@ namespace ExampleToday.Api.Controllers
             {
                 findedPhrase.Author = phrase.Author;
                 findedPhrase.Content = phrase.Content;
-                return Accepted(Request.Host.ToUriComponent() + Request.Path);
+
+                var uri = Url.Action(nameof(GetById), "phrases", new { id }, "https", Request.Host.ToUriComponent())
+                    ?? throw new InvalidOperationException();
+                return Accepted(uri);
             }
             return NotFound();
         }
