@@ -7,26 +7,7 @@ namespace ExampleToday.Api.Controllers
     [Route("phrases")]
     public class PhrasesController : ControllerBase
     {
-        private static readonly List<Phrase> Phrases = new()
-        {
-            new ()
-            {
-                Id = 1,
-                Author = "Fulano",
-                Content = "Foo"
-            },
-            new ()
-            {
-                Id = 2,
-                Author = "Beltrano",
-                Content = "Bar"
-            },new ()
-            {
-                Id = 3,
-                Author = "Ciclano",
-                Content = "Fizz"
-            },
-        };
+        private static readonly List<Phrase> Phrases = DataMock.Data;
 
         [HttpGet]
         public List<Phrase> Get()
