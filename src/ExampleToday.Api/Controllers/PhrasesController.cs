@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ExampleToday.Api.Controllers
 {
     [ApiController]
-    [Route("phrases")]
+    [Route("api/v1/[controller]")]
     public class PhrasesController : ControllerBase
     {
         private static readonly List<Phrase> Phrases = DataMock.Data;
