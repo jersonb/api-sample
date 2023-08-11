@@ -11,7 +11,7 @@ namespace ExampleToday.Api.Controllers
         private static readonly List<Phrase> Phrases = DataMock.Data;
 
         [HttpGet]
-        public IEnumerable<Phrase> Get(string? author, string? term, int page = 1, int limit = 10)
+        public IActionResult Get(string? author, string? term, int page = 1, int limit = 10)
         {
             var phrases = Phrases.AsEnumerable();
 
@@ -27,30 +27,47 @@ namespace ExampleToday.Api.Controllers
 
             page = (page * limit) - limit;
 
-            return phrases.Skip(page).Take(limit);
+            var result = phrases.Skip(page).Take(limit);
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public Phrase? GetById(int id)
+        public IActionResult GetById(int id)
         {
-            return Phrases.Find(p => p.Id == id);
+            var result = Phrases.Find(p => p.Id == id);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
         }
 
         [HttpGet("all")]
-        public List<Phrase> GetAll()
+        public IActionResult GetAll()
         {
-            return Phrases;
+            return Ok(Phrases);
         }
 
         [HttpPost]
-        public void Post(Phrase phrase)
+        public IActionResult Post(Phrase phrase)
         {
+            if (string.IsNullOrEmpty(phrase.Author) || string.IsNullOrEmpty(phrase.Content))
+            {
+                return BadRequest();
+            }
+
             Phrases.Add(phrase);
+            return Created($"{Request.Host.ToUriComponent()}{Request.Path}/{phrase.Id}/", new { phrase.Author, phrase.Content });
         }
 
         [HttpPut("{id}")]
-        public void Put(int id, Phrase phrase)
+        public IActionResult Put(int id, Phrase phrase)
         {
+            if (string.IsNullOrEmpty(phrase.Author) || string.IsNullOrEmpty(phrase.Content))
+            {
+                return BadRequest();
+            }
+
             phrase.Id = id;
             var findedPhrase = Phrases.Find(p => p.Id == id);
 
@@ -58,17 +75,21 @@ namespace ExampleToday.Api.Controllers
             {
                 findedPhrase.Author = phrase.Author;
                 findedPhrase.Content = phrase.Content;
+                return Accepted(Request.Host.ToUriComponent() + Request.Path);
             }
+            return NotFound();
         }
 
-        [HttpDelete]
-        public void Delete(int id, Phrase phrase)
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id, Phrase phrase)
         {
             if (phrase.Id == id)
             {
                 var i = Phrases.FindIndex(p => p.Id == id);
                 Phrases.RemoveAt(i);
+                return Accepted();
             }
+            return BadRequest();
         }
     }
 
