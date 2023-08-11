@@ -1,4 +1,5 @@
-﻿using ExampleToday.Api.Models;
+﻿using System.Globalization;
+using ExampleToday.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExampleToday.Api.Controllers
@@ -10,15 +11,35 @@ namespace ExampleToday.Api.Controllers
         private static readonly List<Phrase> Phrases = DataMock.Data;
 
         [HttpGet]
-        public List<Phrase> Get()
+        public IEnumerable<Phrase> Get(string? author, string? term, int page = 1, int limit = 10)
         {
-            return Phrases;
+            var phrases = Phrases.AsEnumerable();
+
+            if (author != null)
+            {
+                phrases = phrases.Where(p => p.Author.ContainsInsensitive(author));
+            }
+
+            if (term != null)
+            {
+                phrases = phrases.Where(p => p.Content.ContainsInsensitive(term));
+            }
+
+            page = (page * limit) - limit;
+
+            return phrases.Skip(page).Take(limit);
         }
 
         [HttpGet("{id}")]
-        public Phrase? Get(int id)
+        public Phrase? GetById(int id)
         {
             return Phrases.Find(p => p.Id == id);
+        }
+
+        [HttpGet("all")]
+        public List<Phrase> GetAll()
+        {
+            return Phrases;
         }
 
         [HttpPost]
@@ -49,6 +70,12 @@ namespace ExampleToday.Api.Controllers
                 Phrases.RemoveAt(i);
             }
         }
+    }
 
+    public static class StringExt
+    {
+        public static bool ContainsInsensitive(this string source, string search)
+            => (new CultureInfo("pt-BR").CompareInfo)
+                .IndexOf(source, search, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) >= 0;
     }
 }
