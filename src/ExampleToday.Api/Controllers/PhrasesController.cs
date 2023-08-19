@@ -10,7 +10,15 @@ namespace ExampleToday.Api.Controllers
     {
         private static readonly List<Phrase> Phrases = DataMock.Data;
 
+        [HttpGet("all")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Phrase>))]
+        public IActionResult GetAll()
+        {
+            return Ok(Phrases);
+        }
+
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Phrase>))]
         public IActionResult Get(string? author, string? term, int page = 1, int limit = 10)
         {
             var phrases = Phrases.AsEnumerable();
@@ -32,6 +40,8 @@ namespace ExampleToday.Api.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Phrase))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetById(int id)
         {
             var result = Phrases.Find(p => p.Id == id);
@@ -42,13 +52,9 @@ namespace ExampleToday.Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet("all")]
-        public IActionResult GetAll()
-        {
-            return Ok(Phrases);
-        }
-
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Post(Phrase phrase)
         {
             if (string.IsNullOrEmpty(phrase.Author) || string.IsNullOrEmpty(phrase.Content))
@@ -65,6 +71,9 @@ namespace ExampleToday.Api.Controllers
         }
 
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult Put(int id, Phrase phrase)
         {
             if (string.IsNullOrEmpty(phrase.Author) || string.IsNullOrEmpty(phrase.Content))
@@ -88,6 +97,8 @@ namespace ExampleToday.Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
         public IActionResult Delete(int id, Phrase phrase)
         {
             if (phrase.Id == id)
