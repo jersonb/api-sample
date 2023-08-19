@@ -1,13 +1,18 @@
+using ExampleToday.Api.Configurations;
+
 var builder = WebApplication.CreateBuilder(args);
 
 var services = builder.Services;
 // Add services to the container.
 
-services.AddControllers();
+services.AddControllers(config =>
+{
+    config.Conventions.Add(ToKebabParameterTransformer.KebabTransform);
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
-services.AddSwaggerGen(c => 
+services.AddSwaggerGen(c =>
 {
     c.EnableAnnotations();
 });
