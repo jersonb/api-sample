@@ -1,4 +1,5 @@
 using ExampleToday.Api.Configurations;
+using ExampleToday.Api.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,8 @@ services.AddSwaggerGen(c =>
 {
     c.EnableAnnotations();
 });
+
+services.AddSingleton<FamousPhrases>();
 
 var app = builder.Build();
 

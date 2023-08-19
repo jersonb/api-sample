@@ -11,14 +11,19 @@ namespace ExampleToday.Api.Controllers
     [Route("api/v1/[controller]")]
     public class FamousPhrasesController : ControllerBase
     {
-        private static readonly List<Phrase> Phrases = DataMock.Data;
+        private readonly List<Phrase> _phrases;
+
+        public FamousPhrasesController(FamousPhrases famousPhrases)
+        {
+            _phrases = famousPhrases.Data;
+        }
 
         [HttpGet("all")]
         [SwaggerOperation("Obtem todas as frases (sem filtro).")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SuccessResponse<IEnumerable<Phrase>>))]
         public IActionResult GetAll()
         {
-            return Ok(new SuccessResponse<IEnumerable<Phrase>>(Phrases));
+            return Ok(new SuccessResponse<IEnumerable<Phrase>>(_phrases));
         }
 
         [HttpGet]
@@ -26,7 +31,7 @@ namespace ExampleToday.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SuccessResponse<IEnumerable<Phrase>>))]
         public IActionResult Get(string? author, string? term, int page = 1, int limit = 10)
         {
-            var phrases = Phrases.AsEnumerable();
+            var phrases = _phrases.AsEnumerable();
 
             if (!string.IsNullOrEmpty(author))
             {
@@ -50,7 +55,7 @@ namespace ExampleToday.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(FailResponse))]
         public IActionResult GetById(int id)
         {
-            var result = Phrases.Find(p => p.Id == id);
+            var result = _phrases.Find(p => p.Id == id);
             if (result == null)
             {
                 return NotFound(new FailResponse($"Not Found id {id}"));
@@ -69,7 +74,7 @@ namespace ExampleToday.Api.Controllers
                 return BadRequest(new FailResponse($"Invalid data {JsonSerializer.Serialize(phrase, new JsonSerializerOptions { WriteIndented = true })}"));
             }
 
-            Phrases.Add(phrase);
+            _phrases.Add(phrase);
 
             var uri = Url.Action(nameof(GetById), "phrases", new { phrase.Id }, "https", Request.Host.ToUriComponent())
                 ?? throw new InvalidOperationException();
@@ -90,7 +95,7 @@ namespace ExampleToday.Api.Controllers
             }
 
             phrase.Id = id;
-            var findedPhrase = Phrases.Find(p => p.Id == id);
+            var findedPhrase = _phrases.Find(p => p.Id == id);
 
             if (findedPhrase != null)
             {
@@ -112,8 +117,8 @@ namespace ExampleToday.Api.Controllers
         {
             if (phrase.Id == id)
             {
-                var i = Phrases.FindIndex(p => p.Id == id);
-                Phrases.RemoveAt(i);
+                var i = _phrases.FindIndex(p => p.Id == id);
+                _phrases.RemoveAt(i);
                 return Accepted();
             }
             return BadRequest(new FailResponse($"Invalid data {JsonSerializer.Serialize(phrase, new JsonSerializerOptions { WriteIndented = true })}"));

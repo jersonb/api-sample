@@ -3,10 +3,10 @@ using ExampleToday.Api.Models;
 
 namespace ExampleToday.Api.Controllers
 {
-    public static class DataMock
+    public class FamousPhrases
     {
-        public static List<Phrase> Data => JsonSerializer.Deserialize<List<Phrase>>(_data)!;
-        private static readonly string _data = @"
+        public List<Phrase> Data => JsonSerializer.Deserialize<List<Phrase>>(_data)!;
+        private readonly string _data = @"
             [
               {
                 ""id"" : 1,
