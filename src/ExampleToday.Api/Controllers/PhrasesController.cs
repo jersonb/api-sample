@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
+using System.Text.Json;
 using ExampleToday.Api.Models;
+using ExampleToday.Api.ViewObjects;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExampleToday.Api.Controllers
@@ -11,14 +13,14 @@ namespace ExampleToday.Api.Controllers
         private static readonly List<Phrase> Phrases = DataMock.Data;
 
         [HttpGet("all")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Phrase>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SuccessResponse<IEnumerable<Phrase>>))]
         public IActionResult GetAll()
         {
-            return Ok(Phrases);
+            return Ok(new SuccessResponse<IEnumerable<Phrase>>(Phrases));
         }
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Phrase>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SuccessResponse<IEnumerable<Phrase>>))]
         public IActionResult Get(string? author, string? term, int page = 1, int limit = 10)
         {
             var phrases = Phrases.AsEnumerable();
@@ -36,30 +38,30 @@ namespace ExampleToday.Api.Controllers
             page = (page * limit) - limit;
 
             var result = phrases.Skip(page).Take(limit);
-            return Ok(result);
+            return Ok(new SuccessResponse<IEnumerable<Phrase>>(result));
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Phrase))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SuccessResponse<Phrase>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(FailResponse))]
         public IActionResult GetById(int id)
         {
             var result = Phrases.Find(p => p.Id == id);
             if (result == null)
             {
-                return NotFound();
+                return NotFound(new FailResponse($"Not Found id {id}"));
             }
-            return Ok(result);
+            return Ok(new SuccessResponse<Phrase>(result));
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(SuccessResponse<object>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(FailResponse))]
         public IActionResult Post(Phrase phrase)
         {
             if (string.IsNullOrEmpty(phrase.Author) || string.IsNullOrEmpty(phrase.Content))
             {
-                return BadRequest();
+                return BadRequest(new FailResponse($"Invalid data {JsonSerializer.Serialize(phrase, new JsonSerializerOptions { WriteIndented = true })}"));
             }
 
             Phrases.Add(phrase);
@@ -71,14 +73,14 @@ namespace ExampleToday.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status202Accepted)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status202Accepted, Type = typeof(SuccessResponse<object>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(FailResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(FailResponse))]
         public IActionResult Put(int id, Phrase phrase)
         {
             if (string.IsNullOrEmpty(phrase.Author) || string.IsNullOrEmpty(phrase.Content))
             {
-                return BadRequest();
+                return BadRequest(new FailResponse($"Invalid data {JsonSerializer.Serialize(phrase, new JsonSerializerOptions { WriteIndented = true })}"));
             }
 
             phrase.Id = id;
@@ -93,12 +95,12 @@ namespace ExampleToday.Api.Controllers
                     ?? throw new InvalidOperationException();
                 return Accepted(uri);
             }
-            return NotFound();
+            return NotFound(new FailResponse($"Not Found id {id}"));
         }
 
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status202Accepted, Type = typeof(SuccessResponse<object>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(FailResponse))]
         public IActionResult Delete(int id, Phrase phrase)
         {
             if (phrase.Id == id)
@@ -107,7 +109,7 @@ namespace ExampleToday.Api.Controllers
                 Phrases.RemoveAt(i);
                 return Accepted();
             }
-            return BadRequest();
+            return BadRequest(new FailResponse($"Invalid data {JsonSerializer.Serialize(phrase, new JsonSerializerOptions { WriteIndented = true })}"));
         }
     }
 
