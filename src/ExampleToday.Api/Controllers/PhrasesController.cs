@@ -1,8 +1,9 @@
-﻿using System.Globalization;
-using System.Text.Json;
-using ExampleToday.Api.Models;
+﻿using ExampleToday.Api.Models;
 using ExampleToday.Api.ViewObjects;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
+using System.Globalization;
+using System.Text.Json;
 
 namespace ExampleToday.Api.Controllers
 {
@@ -13,6 +14,7 @@ namespace ExampleToday.Api.Controllers
         private static readonly List<Phrase> Phrases = DataMock.Data;
 
         [HttpGet("all")]
+        [SwaggerOperation("Obtem todas as frases (sem filtro).")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SuccessResponse<IEnumerable<Phrase>>))]
         public IActionResult GetAll()
         {
@@ -20,6 +22,7 @@ namespace ExampleToday.Api.Controllers
         }
 
         [HttpGet]
+        [SwaggerOperation("Obtem frases a partir de um filtro de forma paginada. Pode ser filtrada por autor ou conteúdo.")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SuccessResponse<IEnumerable<Phrase>>))]
         public IActionResult Get(string? author, string? term, int page = 1, int limit = 10)
         {
@@ -42,6 +45,7 @@ namespace ExampleToday.Api.Controllers
         }
 
         [HttpGet("{id}")]
+        [SwaggerOperation("Obtem frase uma única frase pelo código identificador.")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SuccessResponse<Phrase>))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(FailResponse))]
         public IActionResult GetById(int id)
@@ -55,6 +59,7 @@ namespace ExampleToday.Api.Controllers
         }
 
         [HttpPost]
+        [SwaggerOperation("Adiciona uma nova frase.")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(SuccessResponse<object>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(FailResponse))]
         public IActionResult Post(Phrase phrase)
@@ -73,6 +78,7 @@ namespace ExampleToday.Api.Controllers
         }
 
         [HttpPut("{id}")]
+        [SwaggerOperation("Altera uma frase existente.")]
         [ProducesResponseType(StatusCodes.Status202Accepted, Type = typeof(SuccessResponse<object>))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(FailResponse))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(FailResponse))]
@@ -99,6 +105,7 @@ namespace ExampleToday.Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [SwaggerOperation("Exclui uma frase existente.")]
         [ProducesResponseType(StatusCodes.Status202Accepted, Type = typeof(SuccessResponse<object>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(FailResponse))]
         public IActionResult Delete(int id, Phrase phrase)

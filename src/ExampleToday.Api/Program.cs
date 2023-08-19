@@ -7,7 +7,10 @@ services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
-services.AddSwaggerGen();
+services.AddSwaggerGen(c => 
+{
+    c.EnableAnnotations();
+});
 
 var app = builder.Build();
 
