@@ -9,7 +9,7 @@ namespace ExampleToday.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class PhrasesController : ControllerBase
+    public class FamousPhrasesController : ControllerBase
     {
         private static readonly List<Phrase> Phrases = DataMock.Data;
 
