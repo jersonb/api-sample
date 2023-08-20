@@ -3,6 +3,7 @@ using ExampleToday.Api.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var configuration = builder.Configuration;
 var services = builder.Services;
 // Add services to the container.
 
@@ -13,12 +14,12 @@ services.AddControllers(config =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
-services.AddSwaggerGen(c =>
-{
-    c.EnableAnnotations();
-});
+
+services.AddSwagger();
 
 services.AddSingleton<FamousPhrases>();
+
+services.AddJwtAuthentication(configuration);
 
 var app = builder.Build();
 
@@ -31,6 +32,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
