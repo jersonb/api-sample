@@ -6,7 +6,16 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var services = builder.Services;
 // Add services to the container.
-
+var CORSPolicy = "CORSPolicy";
+services.AddCors(options =>
+{
+    options.AddPolicy(name: CORSPolicy,
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod();
+        });
+});
 services.AddControllers(config =>
 {
     config.Conventions.Add(ToKebabParameterTransformer.KebabTransform);
@@ -31,6 +40,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(CORSPolicy);
 
 app.UseAuthentication();
 app.UseAuthorization();
